@@ -7,4 +7,18 @@ pytorch implementation of paper [distilling knowledge in a NN](https://arxiv.org
 - output probabilities of large model provide more info than labels since other classes do have a non zero probability. eg if digit is 7, then 2 will have small prob and other digits will have even smaller. 
 - use this info to train a small model beteer
 
+## soft targets
+The large model's output prob distri (soft targets)
 
+## training
+Train the small model to minimize the cross entropy or KL div between its output prob distri and soft targets. The prob is computed as softmax:
+$$ q_i = \frac{\exp(z_i)}{\sum_{j} \exp(z_j)} $$ 
+### problem
+prob assigned by large model to other classes are too small and don't contrib to the loss. So apply a temp `T` to "soften" the probs:
+$$ q_i = \frac{\exp(z_i/T)}{\sum_{j} \exp(z_j/T)} $$
+
+### second loss term
+Add this to predict the actual labels when train small model. The loss then is wtd sum of soft targets and actual tragets.
+
+## transfer set
+dataset for distillation. Suggested to use the train data here.
